@@ -56,6 +56,7 @@ func TestSuccessFetchUserByIDOnylFromCache(t *testing.T) {
 	go fetchUserByID(ctx, rdb, "1", respch, wg, db)
 	wg.Wait()
 
+	assert.Equal(t, 1, len(respch))
 	expectedJSON := `{"id": "1", "name": "john done cache", "email": "john_doe@example.com"}`
 	assert.JSONEq(t, expectedJSON, <-respch)
 }
@@ -91,6 +92,7 @@ func TestSuccessFetchUserByIDOnylFromDB(t *testing.T) {
 	wg.Wait()
 
 	assert.Equal(t, 1, len(respch))
+
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expections: %s", err)
 	}
