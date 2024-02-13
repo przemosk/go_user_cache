@@ -44,6 +44,7 @@ fillup:
 		if err_m != nil {
 			fmt.Println(err_m)
 		}
+
 		// Set user in Redis
 		err := redis_c.Set(ctx, user.id, u, 0).Err()
 		if err != nil {
@@ -62,9 +63,9 @@ func fetchDBUserByID(id int64, respch chan string, wg *sync.WaitGroup, db *sql.D
 	row := db.QueryRow("SELECT * FROM users WHERE id =?", id)
 	if err := row.Scan(&user.id, &user.name, &user.email); err != nil {
 		if err == sql.ErrNoRows {
-			log.Error().Msgf("usersById %d: no such user", id)
+			log.Info().Msgf("usersById %d: no such user", id)
 		}
-		log.Error().Msgf("usersById %d: %v", id, err)
+		log.Info().Msgf("usersById %d: %v", id, err)
 	}
 
 	userString := fmt.Sprintf(user.id + " " + user.name + " " + user.email)
@@ -115,11 +116,6 @@ func main() {
 	var err error
 	db, err := sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
-		log.Error().Err(err)
-	}
-
-	pingErr := db.Ping()
-	if pingErr != nil {
 		log.Error().Err(err)
 	}
 
